@@ -1,0 +1,133 @@
+const apiUrl = 'http://localhost:3333/tasks';
+
+// Elementos do DOM
+const form = document.getElementById('item-form');
+const nameInput = document.getElementById('name');
+const descriptionInput = document.getElementById('description');
+const statusInput = document.getElementById('taskStatus'); // Novo elemento
+const itemList = document.getElementById('item-list');
+const statusFilter = document.getElementById('statusCategoria');
+const filterButton = document.querySelector('.ButtonFiltrar');
+
+// Função para buscar e exibir tarefas
+async function fetchTasks(status = '') {
+    try {
+        let url = apiUrl;
+        if (status) {
+            url += `?status=${status}`;
+        }
+        const response = await fetch(url);
+        const tasks = await response.json();
+
+        itemList.innerHTML = ''; // Limpa a lista antes de exibir os itens
+
+        tasks.forEach(task => {
+            const taskElement = document.createElement('article');
+            taskElement.classList.add('item-card');
+            taskElement.innerHTML = `
+                <header class="item-card__header">
+                    <h2 class="item-card__title">${task.title}</h2>
+                    <span class="item-card__status">Status: ${task.status}</span>
+                </header>
+                <section class="item-card__body">
+                    <p class="item-card__description">${task.description}</p>
+                </section>
+                <footer class="item-card__footer">
+                    <button class="item-card__button item-card__button--update" onclick="updateTaskStatus(${task.id})">Atualizar Status</button>
+                    <button class="item-card__button item-card__button--delete" onclick="deleteTask(${task.id})">Excluir</button>
+                </footer>
+            `;
+            itemList.appendChild(taskElement);
+        });
+    } catch (error) {
+        console.error('Erro ao buscar tarefas:', error);
+    }
+}
+
+// Função para criar uma nova tarefa
+async function createTask(event) {
+    event.preventDefault();
+
+    const title = nameInput.value.trim();
+    const description = descriptionInput.value.trim();
+    const status = statusInput.value.trim(); // Captura o status selecionado
+
+    if (!title || !description || !status) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+    }
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, description, status }) // Envia o status
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao criar tarefa.');
+        }
+
+        nameInput.value = '';
+        descriptionInput.value = '';
+        statusInput.value = 'ativo'; // Resetar para ativo por padrão
+        fetchTasks(); // Atualiza a lista de tarefas
+    } catch (error) {
+        console.error('Erro ao criar tarefa:', error);
+    }
+}
+
+// Função para excluir uma tarefa
+async function deleteTask(id) {
+    try {
+        const response = await fetch(`${apiUrl}/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao excluir tarefa.');
+        }
+
+        fetchTasks(); // Atualiza a lista após exclusão
+    } catch (error) {
+        console.error('Erro ao excluir tarefa:', error);
+    }
+}
+
+// Função para atualizar o status da tarefa
+async function updateTaskStatus(id) {
+    try {
+        const newStatus = prompt("Digite o novo status (ativo, pendente, em_atribuicao, concluida):");
+        if (!newStatus) return;
+
+        const response = await fetch(`${apiUrl}/${id}`, {
+            method: 'PATCH', // PATCH para atualizar parcialmente
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus }) // Atualiza o status
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao atualizar status.');
+        }
+
+        fetchTasks(); // Atualiza a lista após alteração
+    } catch (error) {
+        console.error('Erro ao atualizar status da tarefa:', error);
+    }
+}
+
+// Evento para filtrar tarefas por status
+filterButton.addEventListener('click', () => {
+    const selectedStatus = statusFilter.value; // Obtém o valor selecionado
+    fetchTasks(selectedStatus);
+});
+
+// Evento de submissão do formulário para criar tarefa
+form.addEventListener('submit', createTask);
+
+// Inicializar a lista de tarefas ao carregar a página
+fetchTasks();
