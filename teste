@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <title>APT TodoList</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+       
+        <section id="form-container" class="form-container">
+        
+          <form id="item-form" class="item-form" action="" method="post">
+            <h2 class="form-container__title">CADASTRO DE ATIVIDADES</h2>
+            <label for="name">Nome da atividade:</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              class="item-form__input"
+              placeholder="Digite a sua atividade..."
+            />
+            <span id="error-1"></span>
+            
+            <label for="description">Descrição da atividade:</label>
+            <textarea
+              id="description"
+              class="item-form__textarea"
+              placeholder="Descreva a sua atividade..."
+            ></textarea>
+            <span id="error-2"></span>
+            
+            <!-- Select para escolher o status -->
+            <label for="taskStatus">Status da atividade:</label>
+            <select name="status" id="taskStatus" class="item-form__input">
+              <option value="ativo">Ativo 🟢</option>
+              <option value="pendente">Pendente 🟡</option>
+              <option value="em_atribuicao">Em atribuição ⭕</option>
+              <option value="concluida">Concluída ⚫</option>
+            </select>
+
+            <button onclick="validarFormulario()" type="submit" class="item-form__button">Cadastrar</button>
+          </form>
+        </section>
+
+        <!-- Filtro por Status -->
+        <select name="status" id="statusCategoria" class="statusClass">
+          <option value="">Ativo. 🟢</option>
+          <option value="pendente">Pendente. 🟡</option>
+          <option value="em_atribuicao">Em atribuição. ⭕</option>
+          <option value="concluida">Concluída. ⚫</option>
+        </select>
+        <button class="ButtonFiltrar">Filtrar</button>
+      </header>
+
+      <main class="main">
+        <section id="item-list" class="item-list">
+          <!-- Aqui vão as tarefas geradas dinamicamente -->
+        </section>
+      </main>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
